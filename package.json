@@ -1,0 +1,51 @@
+{
+  "name": "@smoothjs/core",
+  "version": "0.0.1",
+  "description": "A Node.js and TypeScript framework.",
+  "main": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "scripts": {
+    "test": "mocha --require ts-node/register \"./tests/*.spec.ts\"",
+    "build": "rimraf build && tsc -p tsconfig.json",
+    "format": "prettier --write .",
+    "lint": "eslint . --ext=.ts",
+    "commit": "git-cz"
+  },
+  "engines": {
+    "node": ">=10"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "contributors": [
+    "AbdallahMohammed <abdallah.r660@gmail.com>"
+  ],
+  "license": "MIT",
+  "files": [
+    "build/"
+  ],
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  },
+  "dependencies": {
+    "typescript-ioc": "^3.2.2"
+  },
+  "devDependencies": {
+    "@types/require-all": "^3.0.1",
+    "@types/lodash": "^4.14.168",
+    "@types/mocha": "7.0.2",
+    "@types/node": "10.17.24",
+    "copyfiles": "~2.4.0",
+    "japa": "^3.1.1",
+    "mocha": "~8.2.0",
+    "prettier": "2.2.1",
+    "rimraf": "~2.6.2",
+    "ts-node": "~9.0.0",
+    "typescript": "~4.0.2",
+    "eslint": "^7.19.0",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-plugin-prettier": "^3.3.1"
+  }
+}
