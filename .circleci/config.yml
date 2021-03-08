@@ -2,7 +2,7 @@ version: 2
 jobs:
   build_14.15.4:
     docker:
-      - image: circleci/node:14.15.4
+      - image: circleci/node:14.16.0
     working_directory: ~/app
     steps:
       - checkout
