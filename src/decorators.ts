@@ -1,3 +1,5 @@
+import { setMetadata } from "./utils"
+
 export type ParamData = object | string | number
 export interface RouteParamMetadata {
   index: number
@@ -19,7 +21,7 @@ export function assignMetadata<TParamtype = any, TArgs = any>(
   }
 }
 
-function createParamDecorator(paramtype: string) {
+export function createParamDecorator(paramtype: any) {
   return (data?: ParamData): ParameterDecorator => (target, key, index) => {
     const args = Reflect.getMetadata('ROUTE_ARGS_METADATA', target.constructor, key) || {}
     Reflect.defineMetadata(
@@ -61,6 +63,15 @@ export function HostParam(property?: string): ParameterDecorator {
 
 export function BodyParam(property?: string): ParameterDecorator {
   return createParamDecorator('BODY')(property)
+}
+
+export function SetMetadata(
+  metadataKey: string,
+  metadataValue: any
+): ClassDecorator & MethodDecorator {
+  return (target: object, key?: string | symbol) => {
+    setMetadata(metadataKey, target, metadataValue, key as string)
+  }
 }
 
 export const Req = Request

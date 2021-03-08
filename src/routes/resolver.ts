@@ -3,6 +3,7 @@ import {
   addLeadingSlash,
   getMetadata,
   getMethods,
+  isFunction,
   isHttpResponse,
   isNumeric,
   isUndefined,
@@ -179,6 +180,16 @@ export class RoutesResolver {
     controller: Class<unknown>,
     propertyKey: string
   ): ExceptionFilterMetadata[] {
-    return getMetadata('EXCEPTION_FILTERS', controller, propertyKey) || []
+    const resolvedFilters: ExceptionFilterMetadata[] = []
+    const filters: any[] = getMetadata('EXCEPTION_FILTERS', controller, propertyKey) || []
+
+    filters.forEach((filter) => {
+      resolvedFilters.push({
+        func: isFunction(filter) ? filter : (filter as Record<string, any>).catch,
+        exceptionMetatypes: getMetadata('EXCEPTION_METATYPES', filter.constructor) || []
+      })
+    })
+
+    return resolvedFilters
   }
 }

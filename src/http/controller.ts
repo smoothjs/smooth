@@ -15,7 +15,6 @@ export function Controller(prefixOrOptions?: string | string[] | Controller): Cl
       : [prefixOrOptions.path || defaultPath, prefixOrOptions.host]
 
   return (target: object) => {
-    Reflect.defineMetadata('CONTROLLER_HOST', host, target)
     Reflect.defineMetadata('CONTROLLER_PATH', path, target)
   }
 }

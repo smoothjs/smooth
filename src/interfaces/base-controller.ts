@@ -1,5 +1,7 @@
+import { RequestMiddleware } from "./request-middleware";
+
 export interface IController {
   controllers: any
-  providers?: any
+  middlewares: RequestMiddleware[]
   [key: string]: any
 }

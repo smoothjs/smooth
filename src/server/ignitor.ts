@@ -1,7 +1,6 @@
 import { IController } from '../interfaces/base-controller'
 import { RoutesResolver } from '../routes/resolver'
 import { HttpAdapter } from './base-adapter'
-import { getMetadata } from '../utils'
 import { RequestMiddleware } from '../interfaces'
 
 export class Ignitor {
@@ -23,7 +22,7 @@ export class Ignitor {
   }
 
   private async registerGlobalMiddlewares() {
-    const middlewares: RequestMiddleware[] = getMetadata('MIDDLEWARES', this.module.constructor) || []
+    const middlewares: RequestMiddleware[] = this.module.middlewares || []
 
     middlewares.forEach((middleware) => {
       if (! middleware.middleware[middleware.propertyKey || 'handle']) {

@@ -6,7 +6,7 @@ export function getMetadata(key: string, target: object, propertyKey?: string | 
     const targetMetadata = Reflect.getMetadata(key, target.constructor)
     const propertyMetadata = Reflect.getMetadata(key, target, propertyKey)
 
-    if (isObject(targetMetadata)) {
+    if (isObject(targetMetadata) || Array.isArray(targetMetadata)) {
       return [...targetMetadata, ...(propertyMetadata || [])]
     }
 
@@ -62,7 +62,11 @@ export function addLeadingSlash(str?: string): string {
   return str ? (str.charAt(0) !== '/' ? '/' + str : str) : ''
 }
 
-export function insertToArray(arr, index, ...newItems): any {
+export function insertToArray(arr: any, index: number, ...newItems: any): any {
+  if (!Array.isArray(arr)) {
+    return arr
+  }
+
   arr = [...arr.slice(0, index), ...newItems, ...arr.slice(index)]
 
   return arr
@@ -77,11 +81,19 @@ export function isObject(value: any): boolean {
 }
 
 export function isNumeric(value: any): boolean {
-  if (isString(value)) {
+  if (!isString(value)) {
     return false
   }
 
   return !isNaN(value) && !isNaN(parseFloat(value))
+}
+
+export function isInteger(value: any): boolean {
+  return typeof value === 'number'
+}
+
+export function isBoolean(value: any): boolean {
+  return typeof value === 'boolean' || (isInteger(value) && (value === 0 || value === 1))
 }
 
 export function isHttpResponse(value: any, target?: object, propertyKey?: string): boolean {
@@ -101,6 +113,10 @@ export function isEmpty(value: any): boolean {
     return value === ''
   } else if (isObject(value)) {
     return Object.keys(value).length <= 0
+  } else if (isBoolean(value)) {
+    return !value
+  } else if (isInteger(value)) {
+    return value === 0
   }
 
   return isUndefined(value)

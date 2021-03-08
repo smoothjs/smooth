@@ -9,10 +9,11 @@ const defaultMetadata = {
 
 export const RequestMapping = (metadata: RequestMetadata = defaultMetadata): MethodDecorator => {
   const pathMetadata = metadata['ROUTE_PATH']
-  const path = pathMetadata && pathMetadata.length ? pathMetadata : '/'
   const requestMethod = metadata['ROUTE_METHOD'] || RequestMethod.GET
 
   return (target: object, key: string | symbol) => {
+    const path = pathMetadata && pathMetadata.length ? pathMetadata : key
+
     setMetadata('ROUTE_PATH', target, path, key)
     setMetadata('ROUTE_METHOD', target, requestMethod, key)
   }

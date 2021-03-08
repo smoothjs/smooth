@@ -6,26 +6,16 @@ export function UseFilters(
   ...filters: (ExceptionFilter | Function)[]
 ): MethodDecorator & ClassDecorator {
   return (target: any, key?: string | symbol) => {
-    for (const filter of filters) {
-      const catchFunc = isFunction(filter) ? filter : (filter as Record<string, any>).catch
-      const exceptionMetatypes = getMetadata('EXCEPTION_METATYPES', filter.constructor) || []
-
-      setMetadata(
+    setMetadata(
+      'EXCEPTION_FILTERS',
+      target,
+      getMergedMetadata(
+        filters,
         'EXCEPTION_FILTERS',
-        target,
-        getMergedMetadata(
-          [
-            {
-              func: catchFunc,
-              exceptionMetatypes: exceptionMetatypes,
-            },
-          ],
-          'EXCEPTION_FILTERS',
-          target
-        ),
-        key
-      )
-    }
+        target
+      ),
+      key
+    )
   }
 }
 

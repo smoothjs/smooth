@@ -5,7 +5,7 @@ export class HttpException extends Error {
   public code?: string
   public status: number
 
-  constructor(message: string, status: number = 500, code?: string) {
+  constructor(message: string = 'Bad Request', status: number = 500, code?: string) {
     super(message)
 
     /**
@@ -54,5 +54,17 @@ export class HttpException extends Error {
      * Update the stack trace
      */
     Error.captureStackTrace(this, this.constructor)
+  }
+
+  public getMessage(): string {
+    return this.message
+  }
+
+  public getStatus(): number {
+    return this.status
+  }
+
+  public getCode(): any {
+    return this.code
   }
 }
