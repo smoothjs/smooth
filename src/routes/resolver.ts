@@ -20,7 +20,6 @@ import { Class } from '../interfaces/class'
 import { RequestHeader } from '../interfaces/header'
 import { Redirect } from '../interfaces/redirect'
 import { RuntimeException } from '../exceptions'
-import multer from 'multer'
 
 export class RoutesResolver {
   private routerParamsFactory: RouterParamsFactory
