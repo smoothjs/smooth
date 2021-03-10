@@ -17,6 +17,7 @@ export class Ignitor {
     await this.registerGlobalMiddlewares()
     await this.registerRouters()
     await this.registerNotFoundHandler()
+    await this.registerExceptionHandler()
 
     return this.createAdapterProxy()
   }
@@ -35,6 +36,10 @@ export class Ignitor {
 
   private async registerRouters(): Promise<void> {
     this.routesResolver.resolve(this.options && this.options.basePath ? this.options.basePath : '/')
+  }
+
+  private async registerExceptionHandler() {
+    this.routesResolver.registerExceptionHandler()
   }
 
   private async registerNotFoundHandler() {

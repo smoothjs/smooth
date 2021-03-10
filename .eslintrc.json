@@ -1,6 +1,5 @@
 {
   "extends": [
-    "plugin:adonis/typescriptPackage",
     "prettier",
     "prettier/@typescript-eslint"
   ],

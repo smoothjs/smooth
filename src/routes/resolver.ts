@@ -20,6 +20,7 @@ import { Class } from '../interfaces/class'
 import { RequestHeader } from '../interfaces/header'
 import { Redirect } from '../interfaces/redirect'
 import { RuntimeException } from '../exceptions'
+import multer from 'multer'
 
 export class RoutesResolver {
   private routerParamsFactory: RouterParamsFactory
@@ -37,6 +38,12 @@ export class RoutesResolver {
       let path = this.getControllerPathMetadata(controller)
       path = path ? basePath + path : basePath
       this.registerRouters(getMethods(controller), controller, path)
+    })
+  }
+
+  public registerExceptionHandler() {
+    this.httpServer.use((err: any, req: any, res: any, next: () => void) => {
+      this.exceptionHandler.catch(err, res)
     })
   }
 
@@ -131,6 +138,7 @@ export class RoutesResolver {
         response
       )
     } catch (e) {
+      console.error(e)
       this.exceptionHandler.setCustomFilters(this.getExceptionCustomFilter(controller, route))
       this.exceptionHandler.catch(e, res)
     }
