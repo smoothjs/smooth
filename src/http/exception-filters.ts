@@ -9,11 +9,7 @@ export function UseFilters(
     setMetadata(
       'EXCEPTION_FILTERS',
       target,
-      getMergedMetadata(
-        filters,
-        'EXCEPTION_FILTERS',
-        target
-      ),
+      getMergedMetadata(filters, 'EXCEPTION_FILTERS', target),
       key
     )
   }

@@ -26,7 +26,7 @@ export class Ignitor {
     const middlewares: RequestMiddleware[] = this.module.middlewares || []
 
     middlewares.forEach((middleware) => {
-      if (! middleware.middleware[middleware.propertyKey || 'handle']) {
+      if (!middleware.middleware[middleware.propertyKey || 'handle']) {
         return
       }
 

@@ -1,4 +1,4 @@
-import { RequestMiddleware } from "./request-middleware";
+import { RequestMiddleware } from './request-middleware'
 
 export interface IController {
   controllers: any

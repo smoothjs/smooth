@@ -1,86 +1,103 @@
 import test from 'japa'
 import 'reflect-metadata'
-import { addLeadingSlash, getMetadata, getMethods, insertToArray, isEmpty, isFunction, isNumeric, isString, isUndefined, setMetadata, stripEndSlash } from '../src'
+import {
+  addLeadingSlash,
+  getMetadata,
+  getMethods,
+  insertToArray,
+  isEmpty,
+  isFunction,
+  isNumeric,
+  isString,
+  isUndefined,
+  setMetadata,
+  stripEndSlash,
+} from '../src'
 
 class ReflectorClass {
-    testMethod() {}
+  testMethod() {}
 }
 
 test.group('Utils', (group) => {
-    test('getMetadata', async (assert) => {
-        const classObj = new ReflectorClass()
-        
-        Reflect.defineMetadata('TEST_METADATA_KEY', 'VALUE', classObj)
+  test('getMetadata', async (assert) => {
+    const classObj = new ReflectorClass()
 
-        assert.equal(getMetadata('TEST_METADATA_KEY', classObj), 'VALUE')
-    })
+    Reflect.defineMetadata('TEST_METADATA_KEY', 'VALUE', classObj)
 
-    test('getMetadata (Merged)', async (assert) => {
-        const classObj = new ReflectorClass()
+    assert.equal(getMetadata('TEST_METADATA_KEY', classObj), 'VALUE')
+  })
 
-        Reflect.defineMetadata('TEST_METADATA_KEY', ['VALUE1'], classObj.constructor)
-        Reflect.defineMetadata('TEST_METADATA_KEY', ['VALUE2'], classObj, 'testMethod')
+  test('getMetadata (Merged)', async (assert) => {
+    const classObj = new ReflectorClass()
 
-        assert.deepEqual(getMetadata('TEST_METADATA_KEY', classObj, 'testMethod'), ['VALUE1', 'VALUE2'])
-    })
+    Reflect.defineMetadata('TEST_METADATA_KEY', ['VALUE1'], classObj.constructor)
+    Reflect.defineMetadata('TEST_METADATA_KEY', ['VALUE2'], classObj, 'testMethod')
 
-    test('setMetadata', async (assert) => {
-        const classObj = new ReflectorClass()
+    assert.deepEqual(getMetadata('TEST_METADATA_KEY', classObj, 'testMethod'), ['VALUE1', 'VALUE2'])
+  })
 
-        setMetadata('TEST_METADATA_KEY', classObj, 'VALUE1')
+  test('setMetadata', async (assert) => {
+    const classObj = new ReflectorClass()
 
-        assert.equal(Reflect.getMetadata('TEST_METADATA_KEY', classObj), 'VALUE1')
-    })
+    setMetadata('TEST_METADATA_KEY', classObj, 'VALUE1')
 
-    test('getMethods', async (assert) => {
-        class ClassWithMethods {
-            methodOne() {}
+    assert.equal(Reflect.getMetadata('TEST_METADATA_KEY', classObj), 'VALUE1')
+  })
 
-            methodTwo() {}
+  test('getMethods', async (assert) => {
+    class ClassWithMethods {
+      methodOne() {}
 
-            methodThree() {}
-        }
+      methodTwo() {}
 
-        assert.isArray(getMethods(new ClassWithMethods))
-        assert.deepEqual(getMethods(new ClassWithMethods), ['constructor', 'methodOne', 'methodTwo', 'methodThree'])
-    })
+      methodThree() {}
+    }
 
-    test('isUndefined', async (assert) => {
-        assert.isTrue(isUndefined(undefined))
-    })
+    assert.isArray(getMethods(new ClassWithMethods()))
+    assert.deepEqual(getMethods(new ClassWithMethods()), [
+      'constructor',
+      'methodOne',
+      'methodTwo',
+      'methodThree',
+    ])
+  })
 
-    test('isString', async (assert) => {
-        assert.isTrue(isString('string'))
-    })
+  test('isUndefined', async (assert) => {
+    assert.isTrue(isUndefined(undefined))
+  })
 
-    test('stripEndSlash', async (assert) => {
-        assert.equal(stripEndSlash('users/'), 'users')
-    })
+  test('isString', async (assert) => {
+    assert.isTrue(isString('string'))
+  })
 
-    test('addLeadingSlash', async (assert) => {
-        assert.equal(addLeadingSlash('users'), '/users')
-    })
+  test('stripEndSlash', async (assert) => {
+    assert.equal(stripEndSlash('users/'), 'users')
+  })
 
-    test('insertToArray', async (assert) => {
-        const array = ['a', 'b', 'd']
+  test('addLeadingSlash', async (assert) => {
+    assert.equal(addLeadingSlash('users'), '/users')
+  })
 
-        assert.deepEqual(insertToArray(array, 2, 'c'), ['a', 'b', 'c', 'd'])
-    })
+  test('insertToArray', async (assert) => {
+    const array = ['a', 'b', 'd']
 
-    test('isFunction', async (assert) => {
-        assert.isTrue(isFunction(() => {}))
-    })
+    assert.deepEqual(insertToArray(array, 2, 'c'), ['a', 'b', 'c', 'd'])
+  })
 
-    test('isNumeric', async (assert) => {
-        assert.isFalse(isNumeric(112))
-        assert.isTrue(isNumeric('112'))
-    })
+  test('isFunction', async (assert) => {
+    assert.isTrue(isFunction(() => {}))
+  })
 
-    test('isEmpty', async (assert) => {
-        assert.isTrue(isEmpty(''))
-        assert.isTrue(isEmpty(false))
-        assert.isTrue(isEmpty(0))
-        assert.isTrue(isEmpty([]))
-        assert.isTrue(isEmpty({}))
-    })
+  test('isNumeric', async (assert) => {
+    assert.isFalse(isNumeric(112))
+    assert.isTrue(isNumeric('112'))
+  })
+
+  test('isEmpty', async (assert) => {
+    assert.isTrue(isEmpty(''))
+    assert.isTrue(isEmpty(false))
+    assert.isTrue(isEmpty(0))
+    assert.isTrue(isEmpty([]))
+    assert.isTrue(isEmpty({}))
+  })
 })

@@ -87,7 +87,9 @@ export class RoutesResolver {
     let path = getMetadata('ROUTE_PATH', controller, propertyKey)
 
     if (isUndefined(path)) {
-      throw new RuntimeException(`Route path cannot be undefined. Method: ${propertyKey}, Class: ${controller.constructor.name}`)
+      throw new RuntimeException(
+        `Route path cannot be undefined. Method: ${propertyKey}, Class: ${controller.constructor.name}`
+      )
     }
 
     if (Array.isArray(path)) {
@@ -194,7 +196,7 @@ export class RoutesResolver {
     filters.forEach((filter) => {
       resolvedFilters.push({
         func: isFunction(filter) ? filter : (filter as Record<string, any>).catch,
-        exceptionMetatypes: getMetadata('EXCEPTION_METATYPES', filter.constructor) || []
+        exceptionMetatypes: getMetadata('EXCEPTION_METATYPES', filter.constructor) || [],
       })
     })
 
