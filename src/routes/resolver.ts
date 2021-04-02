@@ -19,7 +19,8 @@ import { IController } from '../interfaces/base-controller'
 import { Class } from '../interfaces/class'
 import { RequestHeader } from '../interfaces/header'
 import { Redirect } from '../interfaces/redirect'
-import { RuntimeException } from '../exceptions'
+import { InternalServerErrorException, RuntimeException } from '../exceptions'
+import { pathToRegexp } from 'path-to-regexp';
 
 export class RoutesResolver {
   private routerParamsFactory: RouterParamsFactory
@@ -72,7 +73,47 @@ export class RoutesResolver {
         routerPaths,
         this.getHooksMetadata(controller, route),
         async (req: any, res: any, next: () => void) => {
-          await this.resolveRouterResult(controller, route, { req, res, next })
+          const host = this.getControllerHostMetadata(controller)
+
+          if (! host) {
+            return await this.resolveRouterResult(controller, route, { req, res, next })
+          }
+          
+          const hostname = this.httpServer.getRequestHostname(req) || '';
+          const hosts = Array.isArray(host) ? host : [host];
+          const hostRegExps = hosts.map((host: string) => {
+            const keys = [];
+            const regexp = pathToRegexp(host, keys);
+            return { regexp, keys };
+          });
+    
+          const unsupportedFilteringErrorMessage = Array.isArray(host)
+          ? `HTTP adapter does not support filtering on hosts: ["${host.join(
+              '", "',
+            )}"]`
+          : `HTTP adapter does not support filtering on host: "${host}"`;
+
+          for (const exp of hostRegExps) {
+            const match = hostname.match(exp.regexp);
+            if (match) {
+              exp.keys.forEach((key: any, i: any) => {
+                if (isUndefined(req.hosts)) {
+                  req.hosts = {}
+                }
+
+                req.hosts[key.name] = match[i + 1]
+              });
+              return await this.resolveRouterResult(controller, route, { req, res, next })
+            }
+          }
+
+          if (!next) {
+            throw new InternalServerErrorException(
+              unsupportedFilteringErrorMessage,
+            );
+          }
+
+          return next()
         }
       )
     })
@@ -156,6 +197,10 @@ export class RoutesResolver {
 
   private getControllerPathMetadata(controller: Class<unknown>): string {
     return getMetadata('CONTROLLER_PATH', controller.constructor)
+  }
+
+  private getControllerHostMetadata(controller: Class<unknown>): string {
+    return getMetadata('CONTROLLER_HOST', controller.constructor)
   }
 
   private getMethodMetadata(controller: Class<unknown>, propertyKey: string): string {

@@ -17,5 +17,6 @@ export function Controller(prefixOrOptions?: string | string[] | Controller): Cl
 
   return (target: object) => {
     setMetadata('CONTROLLER_PATH', target, path)
+    setMetadata('CONTROLLER_HOST', target, host)
   }
 }

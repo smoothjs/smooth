@@ -83,6 +83,7 @@ export abstract class HttpAdapter<IServer = any, IRequest = any, IResponse = any
   public async init() {}
 
   abstract close()
+  abstract getRequestHostname(request)
   abstract setViewEngine(engine: string)
   abstract status(response, statusCode: number)
   abstract render(response, view: string, options: any)
