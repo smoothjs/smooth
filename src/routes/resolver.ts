@@ -156,7 +156,7 @@ export class RoutesResolver {
   }
 
   private getControllerPathMetadata(controller: Class<unknown>): string {
-    return getMetadata('CONTROLLER_PATH', controller)
+    return getMetadata('CONTROLLER_PATH', controller.constructor)
   }
 
   private getMethodMetadata(controller: Class<unknown>, propertyKey: string): string {

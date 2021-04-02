@@ -1,5 +1,6 @@
 import 'reflect-metadata'
 import { Controller } from '../interfaces/controller'
+import { setMetadata } from '../utils'
 
 export function Controller(): ClassDecorator
 export function Controller(prefix: string | string[]): ClassDecorator
@@ -15,6 +16,6 @@ export function Controller(prefixOrOptions?: string | string[] | Controller): Cl
       : [prefixOrOptions.path || defaultPath, prefixOrOptions.host]
 
   return (target: object) => {
-    Reflect.defineMetadata('CONTROLLER_PATH', path, target)
+    setMetadata('CONTROLLER_PATH', target, path)
   }
 }
