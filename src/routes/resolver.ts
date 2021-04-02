@@ -81,6 +81,7 @@ export class RoutesResolver {
           
           const hostname = this.httpServer.getRequestHostname(req) || '';
           const hosts = Array.isArray(host) ? host : [host];
+          // @ts-ignore
           const hostRegExps = hosts.map((host: string) => {
             const keys = [];
             const regexp = pathToRegexp(host, keys);
