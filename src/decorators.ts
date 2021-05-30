@@ -39,7 +39,9 @@ export const Response: () => ParameterDecorator = createParamDecorator('RESPONSE
 
 export const Next: () => ParameterDecorator = createParamDecorator('NEXT')
 
-export const Session: () => ParameterDecorator = createParamDecorator('SESSION')
+export function Session(property?: string): ParameterDecorator {
+  return createParamDecorator('SESSION')(property)
+}
 
 export function Headers(property?: string): ParameterDecorator {
   return createParamDecorator('HEADERS')(property)
