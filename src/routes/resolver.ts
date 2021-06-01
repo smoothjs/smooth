@@ -20,7 +20,7 @@ import { Class } from '../interfaces/class'
 import { RequestHeader } from '../interfaces/header'
 import { Redirect } from '../interfaces/redirect'
 import { InternalServerErrorException, RuntimeException } from '../exceptions'
-import { pathToRegexp } from 'path-to-regexp';
+import { pathToRegexp } from 'path-to-regexp'
 
 export class RoutesResolver {
   private routerParamsFactory: RouterParamsFactory
@@ -75,27 +75,25 @@ export class RoutesResolver {
         async (req: any, res: any, next: () => void) => {
           const host = this.getControllerHostMetadata(controller)
 
-          if (! host) {
+          if (!host) {
             return await this.resolveRouterResult(controller, route, { req, res, next })
           }
-          
-          const hostname = this.httpServer.getRequestHostname(req) || '';
-          const hosts = Array.isArray(host) ? host : [host];
+
+          const hostname = this.httpServer.getRequestHostname(req) || ''
+          const hosts = Array.isArray(host) ? host : [host]
           // @ts-ignore
           const hostRegExps = hosts.map((host: string) => {
-            const keys = [];
-            const regexp = pathToRegexp(host, keys);
-            return { regexp, keys };
-          });
-    
+            const keys = []
+            const regexp = pathToRegexp(host, keys)
+            return { regexp, keys }
+          })
+
           const unsupportedFilteringErrorMessage = Array.isArray(host)
-          ? `HTTP adapter does not support filtering on hosts: ["${host.join(
-              '", "',
-            )}"]`
-          : `HTTP adapter does not support filtering on host: "${host}"`;
+            ? `HTTP adapter does not support filtering on hosts: ["${host.join('", "')}"]`
+            : `HTTP adapter does not support filtering on host: "${host}"`
 
           for (const exp of hostRegExps) {
-            const match = hostname.match(exp.regexp);
+            const match = hostname.match(exp.regexp)
             if (match) {
               exp.keys.forEach((key: any, i: any) => {
                 if (isUndefined(req.hosts)) {
@@ -103,15 +101,13 @@ export class RoutesResolver {
                 }
 
                 req.hosts[key.name] = match[i + 1]
-              });
+              })
               return await this.resolveRouterResult(controller, route, { req, res, next })
             }
           }
 
           if (!next) {
-            throw new InternalServerErrorException(
-              unsupportedFilteringErrorMessage,
-            );
+            throw new InternalServerErrorException(unsupportedFilteringErrorMessage)
           }
 
           return next()

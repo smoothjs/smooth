@@ -22,15 +22,16 @@ export function assignMetadata<TParamtype = any, TArgs = any>(
 }
 
 export function createParamDecorator(paramtype: any) {
-  return (data?: ParamData): ParameterDecorator => (target, key, index) => {
-    const args = Reflect.getMetadata('ROUTE_ARGS_METADATA', target.constructor, key) || {}
-    Reflect.defineMetadata(
-      'ROUTE_ARGS_METADATA',
-      assignMetadata<any, Record<number, RouteParamMetadata>>(args, paramtype, index, data),
-      target.constructor,
-      key
-    )
-  }
+  return (data?: ParamData): ParameterDecorator =>
+    (target, key, index) => {
+      const args = Reflect.getMetadata('ROUTE_ARGS_METADATA', target.constructor, key) || {}
+      Reflect.defineMetadata(
+        'ROUTE_ARGS_METADATA',
+        assignMetadata<any, Record<number, RouteParamMetadata>>(args, paramtype, index, data),
+        target.constructor,
+        key
+      )
+    }
 }
 
 export const Request: () => ParameterDecorator = createParamDecorator('REQUEST')

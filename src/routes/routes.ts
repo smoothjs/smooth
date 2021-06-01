@@ -19,14 +19,14 @@ export const RequestMapping = (metadata: RequestMetadata = defaultMetadata): Met
   }
 }
 
-const createMappingDecorator = (method: RequestMethod) => (
-  path?: string | string[]
-): MethodDecorator => {
-  return RequestMapping({
-    ROUTE_PATH: path,
-    ROUTE_METHOD: method,
-  })
-}
+const createMappingDecorator =
+  (method: RequestMethod) =>
+  (path?: string | string[]): MethodDecorator => {
+    return RequestMapping({
+      ROUTE_PATH: path,
+      ROUTE_METHOD: method,
+    })
+  }
 
 export const All = createMappingDecorator(RequestMethod.ALL)
 

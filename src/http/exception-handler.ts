@@ -32,7 +32,7 @@ export class ExceptionHandler implements ExceptionFilter {
       message: exception.message,
     }
 
-    if (! isUndefined(exception.data)) {
+    if (!isUndefined(exception.data)) {
       message['data'] = exception.data
     }
 

@@ -1,7 +1,8 @@
 import { HttpServer, RequestHandler } from '../interfaces/http-server'
 
 export abstract class HttpAdapter<IServer = any, IRequest = any, IResponse = any>
-  implements HttpServer<IServer, IRequest, IResponse> {
+  implements HttpServer<IServer, IRequest, IResponse>
+{
   protected httpServer: IServer
 
   constructor(protected instance: any) {}
