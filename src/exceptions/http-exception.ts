@@ -1,11 +1,12 @@
 export class HttpException extends Error {
   public name: string
   public message: string
+  public data?: any
   public help?: string
   public code?: string
   public status: number
 
-  constructor(message: string = 'Bad Request', status: number = 500, code?: string) {
+  constructor(message: string = 'Bad Request', status: number = 500, code?: string, data?: any) {
     super(message)
 
     /**
@@ -50,6 +51,15 @@ export class HttpException extends Error {
       })
     }
 
+    if (data) {
+      Object.defineProperty(this, 'data', {
+        configurable: true,
+        enumerable: false,
+        value: data,
+        writable: true,
+      })
+    }
+
     /**
      * Update the stack trace
      */
@@ -66,5 +76,9 @@ export class HttpException extends Error {
 
   public getCode(): any {
     return this.code
+  }
+
+  public getData(): any {
+    return this.data
   }
 }
