@@ -1,6 +1,6 @@
 {
   "name": "@smoothjs/smooth",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "A Node.js and TypeScript framework.",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
