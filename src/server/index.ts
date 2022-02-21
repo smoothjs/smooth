@@ -1,2 +1,5 @@
 export { HttpAdapter } from './base-adapter'
 export { Ignitor } from './ignitor'
+export { Request } from './base-request'
+export { Response } from './base-response'
+export { Next } from './base-next'

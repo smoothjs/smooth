@@ -15,26 +15,29 @@ import { NotFoundException } from '../exceptions/not-found'
 import { ExceptionHandler } from '../http/exception-handler'
 import { HookFunction } from '../hooks'
 import { ExceptionFilterMetadata } from '../interfaces/exception-filter'
-import { IController } from '../interfaces/base-controller'
 import { Class } from '../interfaces/class'
 import { RequestHeader } from '../interfaces/header'
 import { Redirect } from '../interfaces/redirect'
 import { InternalServerErrorException, RuntimeException } from '../exceptions'
 import { pathToRegexp } from 'path-to-regexp'
+import { Container } from 'typescript-ioc'
+import { Config } from '@smoothjs/config'
+import { Next, Request, Response } from '../server'
+import { ProviderResolver } from '../provider'
 
 export class RoutesResolver {
   private routerParamsFactory: RouterParamsFactory
   private routerResponseController: RouterResponseController
   private exceptionHandler: ExceptionHandler
 
-  constructor(private readonly httpServer: HttpAdapter, private readonly baseModule: IController) {
+  constructor(private readonly httpServer: HttpAdapter, private readonly providerResolver: ProviderResolver) {
     this.routerParamsFactory = new RouterParamsFactory()
     this.routerResponseController = new RouterResponseController(this.httpServer)
     this.exceptionHandler = new ExceptionHandler(this.httpServer)
   }
 
   public resolve(basePath: string) {
-    this.baseModule.controllers.forEach((controller) => {
+    Container.get(Config).get('app.controllers', []).forEach((controller) => {
       let path = this.getControllerPathMetadata(controller)
       path = path ? basePath + path : basePath
       this.registerRouters(getMethods(controller), controller, path)
@@ -42,13 +45,13 @@ export class RoutesResolver {
   }
 
   public registerExceptionHandler() {
-    this.httpServer.use((err: any, req: any, res: any, next: () => void) => {
+    this.httpServer.use((err: any, req: any, res: any) => {
       this.exceptionHandler.catch(err, res)
     })
   }
 
   public registerNotFoundHandler() {
-    this.httpServer.use((req: any, res: any, next: () => void) => {
+    this.httpServer.use((req: any, res: any) => {
       const url = req.originalUrl.replace(/\?.*$/, '')
       const method = req.method.toUpperCase()
 
@@ -73,15 +76,17 @@ export class RoutesResolver {
         routerPaths,
         this.getHooksMetadata(controller, route),
         async (req: any, res: any, next: () => void) => {
+          await this.bindContainerValues(req, res, next)
+          await this.providerResolver.boot()
+          
           const host = this.getControllerHostMetadata(controller)
 
           if (!host) {
-            return await this.resolveRouterResult(controller, route, { req, res, next })
+            return await this.resolveRouterResult(controller, route, res)
           }
 
           const hostname = this.httpServer.getRequestHostname(req) || ''
           const hosts = Array.isArray(host) ? host : [host]
-          // @ts-ignore
           const hostRegExps = hosts.map((host: string) => {
             const keys = []
             const regexp = pathToRegexp(host, keys)
@@ -102,7 +107,7 @@ export class RoutesResolver {
 
                 req.hosts[key.name] = match[i + 1]
               })
-              return await this.resolveRouterResult(controller, route, { req, res, next })
+              return await this.resolveRouterResult(controller, route, res)
             }
           }
 
@@ -139,17 +144,16 @@ export class RoutesResolver {
   }
 
   private async resolveRouterResult<
-    IRequest extends Record<string, any> = any,
     IResponse extends Record<string, any> = any
   >(
     controller: Class<unknown>,
     route: string,
-    { req, res, next }: { req: IRequest; res: IResponse; next: Function }
+    res: IResponse
   ) {
     try {
-      const params = this.routerParamsFactory.getValuesFromArray(
-        getMetadata('ROUTE_ARGS_METADATA', controller.constructor, route) || [],
-        { req, res, next }
+      const params = await this.routerParamsFactory.resolve(
+        getMetadata('design:paramtypes', controller, route) || [],
+        getMetadata('ROUTE_PARAM_OVERRIDES', controller, route) || []
       )
 
       await this.routerResponseController.setHeaders(
@@ -165,7 +169,7 @@ export class RoutesResolver {
         this.getHttpStatusCodeMetadata(controller, route)
       )
 
-      const response = await controller[route](...params)
+      const response = await (controller[route as keyof Class] as Function).apply(controller, params)
 
       if (isHttpResponse(response, controller, route)) {
         res.send(isNumeric(response) ? `${response}` : response)
@@ -242,5 +246,11 @@ export class RoutesResolver {
     })
 
     return resolvedFilters
+  }
+
+  private bindContainerValues(req: any, res: any, next: Function) {
+    Container.bind(Request).factory(() => req)
+    Container.bind(Response).factory(() => res)
+    Container.bind(Next).factory(() => next)
   }
 }

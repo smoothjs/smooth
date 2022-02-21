@@ -1,7 +1,7 @@
 import { RequestHeader } from '../interfaces/header'
 import { Redirect } from '../interfaces/redirect'
 import { HttpAdapter } from '../server/base-adapter'
-import { isEmpty, isFunction, isString, isUndefined } from '../utils'
+import { isEmpty, isFunction, isUndefined } from '../utils'
 
 export class RouterResponseController {
   constructor(private readonly httpServer: HttpAdapter) {}

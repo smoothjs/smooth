@@ -121,3 +121,7 @@ export function isEmpty(value: any): boolean {
 
   return isUndefined(value)
 }
+
+export function esmResolver(output: any) {
+  return output && output.__esModule && output.default ? output.default : output
+}

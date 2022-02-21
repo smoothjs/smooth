@@ -1,6 +1,6 @@
 {
   "name": "@smoothjs/smooth",
-  "version": "0.1.6",
+  "version": "0.1.0",
   "description": "A Node.js and TypeScript framework.",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
@@ -43,7 +43,13 @@
     ]
   },
   "dependencies": {
+    "@smoothjs/config": "^0.1.0",
+    "@types/lodash": "^4.14.178",
+    "lodash": "^4.17.21",
     "path-to-regexp": "^6.2.0",
+    "require-all": "^3.0.0",
+    "resolve-from": "^5.0.0",
+    "type-is": "^1.6.18",
     "typescript-ioc": "^3.2.2"
   },
   "devDependencies": {

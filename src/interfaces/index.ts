@@ -1,4 +1,3 @@
-export { IController } from './base-controller'
 export { Class } from './class'
 export { Controller as ControllerInterface } from './controller'
 export { ExceptionFilter, ExceptionFilterMetadata } from './exception-filter'

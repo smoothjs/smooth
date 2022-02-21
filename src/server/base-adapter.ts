@@ -90,8 +90,7 @@ export abstract class HttpAdapter<IServer = any, IRequest = any, IResponse = any
   abstract render(response, view: string, options: any)
   abstract redirect(response, statusCode: number, url: string)
   abstract setHeader(response, name: string, value: string)
-  abstract initHttpServer(options: any)
+  abstract initHttpServer()
   abstract createMiddlewareFactory(requestMethod: string)
   abstract sendResponse(response, ...args)
-  abstract useBodyParser()
 }

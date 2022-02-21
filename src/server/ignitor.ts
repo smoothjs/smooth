@@ -1,19 +1,34 @@
-import { IController } from '../interfaces/base-controller'
+import { join } from 'path'
+import { Config } from '@smoothjs/config'
 import { RoutesResolver } from '../routes/resolver'
 import { HttpAdapter } from './base-adapter'
 import { RequestMiddleware } from '../interfaces'
+import { ConfigResolver } from '../config'
+import { Container } from 'typescript-ioc'
+import { ProviderResolver } from '../provider'
 
 export class Ignitor {
-  private readonly routesResolver: RoutesResolver
+  private routesResolver: RoutesResolver
+  
+  private readonly configResolver: ConfigResolver
 
-  constructor(private module: IController, private httpServer: HttpAdapter, private options?: any) {
-    this.routesResolver = new RoutesResolver(this.httpServer, this.module)
+  private readonly providerResolver: ProviderResolver
+
+  private httpServer: HttpAdapter
+
+  constructor(public readonly appRoot: string = 'config') {
+    this.configResolver = new ConfigResolver(join(this.appRoot, 'config'))
+    this.providerResolver = new ProviderResolver(Container.get(Config).get('app.providers', []))
   }
 
   public async create() {
-    await this.httpServer.initHttpServer(this.options)
+    await this.configResolver.register()
+    await this.providerResolver.register()
+    
+    this.setupHttpAdapter()
 
-    await this.useBodyParser()
+    await this.httpServer.initHttpServer()
+
     await this.registerGlobalMiddlewares()
     await this.registerRouters()
     await this.registerNotFoundHandler()
@@ -22,8 +37,13 @@ export class Ignitor {
     return this.createAdapterProxy()
   }
 
+  private setupHttpAdapter() {
+    this.httpServer = Container.get(HttpAdapter)
+    this.routesResolver = new RoutesResolver(this.httpServer, this.providerResolver)
+  }
+
   private async registerGlobalMiddlewares() {
-    const middlewares: RequestMiddleware[] = this.module.middlewares || []
+    const middlewares: RequestMiddleware[] = Container.get(Config).get('app.middlewares', [])
 
     middlewares.forEach((middleware) => {
       if (!middleware.middleware[middleware.propertyKey || 'handle']) {
@@ -35,7 +55,7 @@ export class Ignitor {
   }
 
   private async registerRouters(): Promise<void> {
-    this.routesResolver.resolve(this.options && this.options.basePath ? this.options.basePath : '/')
+    this.routesResolver.resolve(Container.get(Config).get('app.basePath', '/'))
   }
 
   private async registerExceptionHandler() {
@@ -44,12 +64,6 @@ export class Ignitor {
 
   private async registerNotFoundHandler() {
     this.routesResolver.registerNotFoundHandler()
-  }
-
-  private async useBodyParser() {
-    if (this.options && this.options.bodyParser !== false) {
-      this.httpServer.useBodyParser()
-    }
   }
 
   private createAdapterProxy() {

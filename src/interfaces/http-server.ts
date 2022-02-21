@@ -38,6 +38,4 @@ export interface HttpServer<IServer = any, IRequest = any, IResponse = any> {
   close(): any
   sendResponse(response: any, ...args): any
   createMiddlewareFactory(requestMethod: string): any
-  useBodyParser(): any
-  getRequestHostname(request: any): any
 }
